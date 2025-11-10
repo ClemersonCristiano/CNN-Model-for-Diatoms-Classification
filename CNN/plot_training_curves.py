@@ -46,6 +46,7 @@ def plot_training_curves(MODEL_NAME, history, title_suffix):
 
         plt.suptitle(f'Curvas de Treinamento - {MODEL_NAME}', fontsize=16)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+        plt.savefig(f'training_curves_{MODEL_NAME}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
     except Exception as e:
