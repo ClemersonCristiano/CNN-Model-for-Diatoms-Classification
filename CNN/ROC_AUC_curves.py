@@ -38,6 +38,7 @@ def roc_auc_curves(y_true_one_hot, y_pred_proba, CLASSES, MODEL_NAME):
         plt.title(f'Curvas ROC (One-vs-Rest) - {MODEL_NAME}')
         plt.legend(loc="lower right")
         plt.grid(True)
+        plt.savefig(f'roc_auc_curves_{MODEL_NAME}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
     except Exception as e:
