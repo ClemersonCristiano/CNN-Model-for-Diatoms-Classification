@@ -41,7 +41,7 @@ def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME):
             print("\nModelo carregado com sucesso.")
 
             print("\nObtendo predições e labels...")
-            results, y_true_labels, y_pred_labels, y_pred_proba, y_true_one_hot = get_predictions(model, val_dataset, val_files, val_labels, CLASSES, BATCH_SIZE)
+            results, y_true_labels, y_pred_labels, y_pred_proba, y_true_one_hot = get_predictions(model, val_dataset, val_files, val_labels, CLASSES, BATCH_SIZE, MODEL_NAME)
             
             print("\nPlotando Matriz de Confusão...")
             plot_confusion_matrix(results, y_true_labels, y_pred_labels, MODEL_NAME, CLASSES)
