@@ -243,6 +243,7 @@ def main():
     model_name = r'Teste'
     DATASER_DIR = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset'
     NUM_EPOCHS = 20
+    is_training = True
     
     while True:
         
@@ -257,7 +258,7 @@ def main():
         
         if op == '1':
             try:
-                CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, _, _ = dataset_preparation(DATASER_DIR)
+                CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, _, _ = dataset_preparation(DATASER_DIR, is_training)
                 
                 model, model_checkpoint, early_stopping, save_feature_extraction_model = feature_extraction_model_build(CLASSES, IMAGE_SIZE, NUM_CHANNELS, path_to_save_feature_extraction_model)
                 
@@ -270,7 +271,7 @@ def main():
             
             try:
             
-                CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, _, _ = dataset_preparation(DATASER_DIR)
+                CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, _, _ = dataset_preparation(DATASER_DIR, is_training)
                 
                 model, model_checkpoint_finetuning, early_stopping_finetuning, path_to_save_finetuning_model = fine_tune_model_build(load_model_to_finetuning)
                 
