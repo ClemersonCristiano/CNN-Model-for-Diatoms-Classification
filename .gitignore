@@ -1,4 +1,4 @@
-CNN/models/diatom_classifier_best_model_finetuned.keras
+CNN/models
 /dataset_final
 /venv
 /pipeline_tratamento/__pycache__
