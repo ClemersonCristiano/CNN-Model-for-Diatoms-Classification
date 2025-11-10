@@ -44,7 +44,7 @@ def plot_tsne_visualization(model, val_dataset, y_true_labels, CLASSES, MODEL_NA
         print("Calculando t-SNE (isso pode levar alguns minutos)...")
         tsne = TSNE(n_components=2,       # Reduzir para 2 dimensões (x, y)
                     perplexity=30.0,    # Valor padrão
-                    n_iter=1000,        # Iterações
+                    max_iter=1000,        # Iterações
                     random_state=42,    # Reprodutibilidade
                     verbose=1)          # Mostrar progresso
 
