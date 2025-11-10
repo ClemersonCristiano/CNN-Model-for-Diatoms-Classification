@@ -68,6 +68,7 @@ def plot_tsne_visualization(model, val_dataset, y_true_labels, CLASSES, MODEL_NA
         plt.xlabel('Componente t-SNE 1')
         plt.ylabel('Componente t-SNE 2')
         plt.legend(markerscale=3) # Legendas com marcadores maiores
+        plt.savefig(f'tsne_visualization_{MODEL_NAME}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
     except Exception as e:
