@@ -228,9 +228,9 @@ def train_fine_tune_model(model, model_checkpoint_finetuning, early_stopping_fin
         print(f"O melhor modelo de ajuste fino foi salvo em: {path_to_save_finetuning_model}")
 
         try:
-            plot_training_curves(history_finetuning, f"FineTuning - {MODEL_NAME}")
+            plot_training_curves(MODEL_NAME, history_finetuning, f"FineTuning - {MODEL_NAME}")
         except NameError:
-            plot_training_curves(history_finetuning, "FineTuning: Ajuste Fino")
+            plot_training_curves(MODEL_NAME, history_finetuning, "FineTuning: Ajuste Fino")
             
     except Exception as e:
         print(f"Erro ao treinar o modelo na fase de ajuste fino: {e}")
