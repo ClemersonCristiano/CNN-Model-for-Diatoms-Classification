@@ -213,16 +213,16 @@ def normalize_image(image, label):
         print(f"Erro ao normalizar a imagem: {e}")
         return image, label
 
-def create_dataset(filepaths, labels, is_training=True):
+def create_dataset(filepaths, labels, is_training):
     """
     Cria um objeto tf.data.Dataset completo.
     """
     try:
         dataset = tf.data.Dataset.from_tensor_slices((filepaths, labels))
 
-        if is_training:
-            # 1. Embaralhar os FILEPATHS (strings), o que é leve para a RAM.
-            dataset = dataset.shuffle(buffer_size=len(filepaths), reshuffle_each_iteration=True)
+        # if is_training:
+        # 1. Embaralhar os FILEPATHS (strings), o que é leve para a RAM.
+        dataset = dataset.shuffle(buffer_size=len(filepaths), reshuffle_each_iteration=True)
 
         # 2. Carregar as imagens (agora em ordem aleatória)
         dataset = dataset.map(load_image, num_parallel_calls=AUTOTUNE)
@@ -247,7 +247,7 @@ def create_dataset(filepaths, labels, is_training=True):
         print(f"Erro ao criar o dataset: {e}")
         return None
 
-def create_data_pipelines(train_files, train_labels, val_files, val_labels, CLASSES):
+def create_data_pipelines(train_files, train_labels, val_files, val_labels, CLASSES, is_training):
     
     try:
         print("\nCriando pipelines de dados com AUGMENTAÇÃO ONLINE...")
@@ -259,7 +259,7 @@ def create_data_pipelines(train_files, train_labels, val_files, val_labels, CLAS
         val_labels_one_hot = tf.keras.utils.to_categorical(val_labels, num_classes=len(CLASSES))
 
         # Criar os pipelines
-        train_dataset = create_dataset(train_files, train_labels_one_hot, is_training=True)
+        train_dataset = create_dataset(train_files, train_labels_one_hot, is_training)
         val_dataset = create_dataset(val_files, val_labels_one_hot, is_training=False) # Validação NUNCA é aumentada
 
         print("Pipelines criados com sucesso.")
@@ -272,7 +272,7 @@ def create_data_pipelines(train_files, train_labels, val_files, val_labels, CLAS
         print(f"Erro ao criar os pipelines de dados: {e}")
         return None, None
 
-def dataset_preparation(DATASET_DIR):
+def dataset_preparation(DATASET_DIR, is_training):
     
     try:
         print("="*30)
@@ -317,7 +317,7 @@ def dataset_preparation(DATASET_DIR):
         
         print("="*30)
         print("\nCriando Pipelines de Dados...")
-        train_dataset, val_dataset = create_data_pipelines(train_files, train_labels, val_files, val_labels, class_to_int)
+        train_dataset, val_dataset = create_data_pipelines(train_files, train_labels, val_files, val_labels, class_to_int, is_training)
         print("="*30)
         
         print("\n\n")
@@ -326,3 +326,12 @@ def dataset_preparation(DATASET_DIR):
     
     except Exception as e:
         print(f"Erro durante a preparação do dataset: {e}")
+        
+        
+        
+if __name__ == "__main__":
+    
+    DATASET_DIR = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset'
+    is_training = True
+    
+dataset_preparation(DATASET_DIR, is_training)
