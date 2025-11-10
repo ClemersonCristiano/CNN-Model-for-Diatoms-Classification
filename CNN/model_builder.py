@@ -143,7 +143,7 @@ def train_feature_extraction_model(model, model_checkpoint, early_stopping, path
     except Exception as e:
         print(f"Erro ao treinar o modelo: {e}")
         
-def fine_tune_model_build(load_model_to_finetuning):
+def fine_tune_model_build(load_model_to_finetuning, path_to_save_finetuning_model):
     # --- 13. Início da FineTuning: Ajuste Fino (Fine-Tuning) ---
 
     try:
@@ -190,9 +190,9 @@ def fine_tune_model_build(load_model_to_finetuning):
         print("\nResumo do modelo para FineTuning:")
         model.summary()
 
-        model_checkpoint_finetuning, early_stopping_finetuning = model_builder_callbacks(load_model_to_finetuning)
+        model_checkpoint_finetuning, early_stopping_finetuning = model_builder_callbacks(path_to_save_finetuning_model)
         
-        return model, model_checkpoint_finetuning, early_stopping_finetuning, load_model_to_finetuning
+        return model, model_checkpoint_finetuning, early_stopping_finetuning, path_to_save_finetuning_model
     
     except Exception as e:
         print(f"Erro ao preparar o modelo para ajuste fino: {e}")
