@@ -1,1 +1,2 @@
-src/models/diatom_classifier_best_model_finetuned.keras
+CNN/models/diatom_classifier_best_model_finetuned.keras
+/dataset_final
