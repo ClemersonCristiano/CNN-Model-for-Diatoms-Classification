@@ -15,6 +15,7 @@ def plot_confusion_matrix(results, y_true_labels, y_pred_labels, MODEL_NAME, CLA
         plt.title(f'Matriz de Confusão - Acurácia: {results[1]*100:.2f}% - {MODEL_NAME}')
         plt.ylabel('Classe Verdadeira (True Label)')
         plt.xlabel('Classe Prevista (Predicted Label)')
+        plt.savefig(f'confusion_matrix_{MODEL_NAME}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
     except Exception as e:
