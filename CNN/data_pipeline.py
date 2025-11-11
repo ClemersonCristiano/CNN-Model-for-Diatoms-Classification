@@ -326,12 +326,3 @@ def dataset_preparation(DATASET_DIR, is_training):
     
     except Exception as e:
         print(f"Erro durante a preparação do dataset: {e}")
-        
-        
-        
-if __name__ == "__main__":
-    
-    DATASET_DIR = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset'
-    is_training = True
-    
-dataset_preparation(DATASET_DIR, is_training)
