@@ -42,11 +42,3 @@ def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training):
         print(f"Erro durante a avaliação do modelo: {e}")
         
 if __name__ == "__main__":
-    
-    
-    DATASER_DIR = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset'
-    MODEL_PATH = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\src/CNN/models/diatom_classifier_best_model_finetuned.keras'
-    MODEL_NAME = 'teste AAAAAA'
-    is_training = True
-
-    evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training)
