@@ -192,7 +192,7 @@ def fine_tune_model_build(load_model_to_finetuning, path_to_save_finetuning_mode
 
         model_checkpoint_finetuning, early_stopping_finetuning = model_builder_callbacks(path_to_save_finetuning_model)
         
-        return model, model_checkpoint_finetuning, early_stopping_finetuning, path_to_save_finetuning_model
+        return model, model_checkpoint_finetuning, early_stopping_finetuning
     
     except Exception as e:
         print(f"Erro ao preparar o modelo para ajuste fino: {e}")
@@ -237,13 +237,13 @@ def train_fine_tune_model(model, model_checkpoint_finetuning, early_stopping_fin
         
 def main():
     
-    path_to_save_feature_extraction_model = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\src\CNN\models\teste.keras'
-    load_model_to_finetuning = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\src\CNN\models\diatom_classifier_best_model_finetuned.keras'
-    path_to_save_finetuning_model = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\src\CNN\models\testeFine.keras'
-    model_name = r'Teste'
-    DATASER_DIR = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset'
+    path_to_save_feature_extraction_model = '/content/drive/MyDrive/dataset/modelosFinais/feature_extraction_model_22k/Diatom_Classifier_Feature_Extraction_Model_22k.keras'
+    load_model_to_finetuning = '/content/drive/MyDrive/dataset/modelosFinais/feature_extraction_model_22k/Diatom_Classifier_Feature_Extraction_Model_22k.keras'
+    path_to_save_finetuning_model = '/content/drive/MyDrive/dataset/modelosFinais/feature_extraction_model_22k/Diatom_Classifier_FineTuned_Model_22k.keras'
+    model_name = 'Modelo_22k'
+    DATASER_DIR = '/content/dataset'
     NUM_EPOCHS = 20
-    is_training = True
+    is_training = False
     
     while True:
         
@@ -273,7 +273,7 @@ def main():
             
                 CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, _, _ = dataset_preparation(DATASER_DIR, is_training)
                 
-                model, model_checkpoint_finetuning, early_stopping_finetuning, path_to_save_finetuning_model = fine_tune_model_build(load_model_to_finetuning)
+                model, model_checkpoint_finetuning, early_stopping_finetuning = fine_tune_model_build(load_model_to_finetuning, path_to_save_finetuning_model)
                 
                 train_fine_tune_model(model, model_checkpoint_finetuning, early_stopping_finetuning, path_to_save_finetuning_model, model_name, train_dataset, val_dataset, class_weights, train_files, val_files, NUM_EPOCHS, BATCH_SIZE)
             
