@@ -220,9 +220,9 @@ def create_dataset(filepaths, labels, is_training):
     try:
         dataset = tf.data.Dataset.from_tensor_slices((filepaths, labels))
 
-        # if is_training:
-        # 1. Embaralhar os FILEPATHS (strings), o que é leve para a RAM.
-        dataset = dataset.shuffle(buffer_size=len(filepaths), reshuffle_each_iteration=True)
+        if is_training:
+            # 1. Embaralhar os FILEPATHS (strings), o que é leve para a RAM.
+            dataset = dataset.shuffle(buffer_size=len(filepaths), reshuffle_each_iteration=True)
 
         # 2. Carregar as imagens (agora em ordem aleatória)
         dataset = dataset.map(load_image, num_parallel_calls=AUTOTUNE)
