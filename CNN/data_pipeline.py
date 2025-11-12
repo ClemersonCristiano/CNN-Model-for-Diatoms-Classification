@@ -227,7 +227,6 @@ def create_dataset(filepaths, labels, is_training):
         # 2. Carregar as imagens (agora em ordem aleatória)
         dataset = dataset.map(load_image, num_parallel_calls=AUTOTUNE)
 
-        # Para treino sem augmentação, basta passar is_training=False
         if is_training:
             # 3. Aplicar a augmentação
             dataset = dataset.map(augment_image, num_parallel_calls=AUTOTUNE)
