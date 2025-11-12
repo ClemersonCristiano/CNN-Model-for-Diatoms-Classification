@@ -42,3 +42,10 @@ def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training):
         print(f"Erro durante a avaliação do modelo: {e}")
         
 if __name__ == "__main__":
+    
+    DATASER_DIR = ""
+    MODEL_PATH = ""
+    MODEL_NAME = ""
+    is_training = False
+    
+    evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training)
