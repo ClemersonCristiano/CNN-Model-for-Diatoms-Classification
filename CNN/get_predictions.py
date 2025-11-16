@@ -6,70 +6,96 @@ from sklearn.metrics import classification_report
 from data_pipeline import create_dataset
 import matplotlib.pyplot as plt
 
-def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME):
+def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME="modelo"):
+    """
+    Plota gráfico tabular das métricas do relatório de classificação, com separação entre classes e métricas globais.
 
-    # Gera o relatório
-    report_dict = classification_report(y_true_labels, y_pred_labels, target_names=CLASSES, output_dict=True)
-    df_report = pd.DataFrame(report_dict).transpose().round(3)
-
-    # Divide o relatório
-    df_classes = df_report.iloc[:len(CLASSES)]
-    df_summary = df_report.iloc[len(CLASSES):]
-
-    # Cria figura
-    fig, axes = plt.subplots(2, 1, figsize=(10, 6))
-    for ax in axes:
-        ax.axis('off')
-
-    # ---- Tabela 1 ----
-    axes[0].set_title("Métricas por Classe", fontsize=12, pad=10, weight='bold')
-
-    tabela1 = axes[0].table(
-        cellText=df_classes.values,
-        colLabels=df_classes.columns,
-        rowLabels=df_classes.index,
-        cellLoc='center',
-        loc='center'
+    Parâmetros:
+        y_true_labels (array): Rótulos reais.
+        y_pred_labels (array): Rótulos previstos.
+        CLASSES (list): Lista de nomes das classes.
+        MODEL_NAME (str): Nome do modelo/arquivo.
+    """
+    # Cria o relatório como dict
+    class_report = classification_report(
+        y_true_labels,
+        y_pred_labels,
+        target_names=CLASSES,
+        digits=4,
+        output_dict=True
     )
-    tabela1.auto_set_font_size(False)
-    tabela1.set_fontsize(10)
-    tabela1.scale(1.2, 1.2)
 
-    for (i, j), cell in tabela1.get_celld().items():
-        cell.set_edgecolor('black')
-        if i == 0:
-            cell.set_facecolor('#d9d9d9')
-            cell.set_text_props(weight='bold')
+    # Dados das classes individuais
+    class_rows = []
+    for c in CLASSES:
+        row = [
+            c,
+            round(class_report[c]["precision"], 4),
+            round(class_report[c]["recall"], 4),
+            round(class_report[c]["f1-score"], 4),
+            int(class_report[c]["support"])
+        ]
+        class_rows.append(row)
 
-    # ---- Tabela 2 ----
-    axes[1].set_title("Resumo Geral", fontsize=12, pad=10, weight='bold')
+    # Dados das métricas globais (accuracy, macro avg, weighted avg)
+    macro = class_report["macro avg"]
+    weighted = class_report["weighted avg"]
+    accuracy_val = round(class_report["accuracy"], 4)
+    total_support = sum([class_report[c]["support"] for c in CLASSES])
+    # Accuracy na coluna F1-Score
+    global_rows = [
+        ["accuracy", "-", "-", accuracy_val, total_support],
+        [
+            "macro avg",
+            round(macro["precision"], 4),
+            round(macro["recall"], 4),
+            round(macro["f1-score"], 4),
+            int(macro["support"])
+        ],
+        [
+            "weighted avg",
+            round(weighted["precision"], 4),
+            round(weighted["recall"], 4),
+            round(weighted["f1-score"], 4),
+            int(weighted["support"])
+        ]
+    ]
 
-    tabela2 = axes[1].table(
-        cellText=df_summary.values,
-        colLabels=df_summary.columns,
-        rowLabels=df_summary.index,
+    # Cabeçalhos
+    column_labels = ["Classe", "Precision", "Recall", "F1-Score", "Support"]
+
+    # Criando a figura do gráfico
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.axis('off')
+
+    # Tabela das classes
+    table_classes = ax.table(
+        cellText=class_rows,
+        colLabels=column_labels,
         cellLoc='center',
-        loc='center'
+        loc='center',
+        bbox=[0.26, 0.5, 0.48, 0.35]
     )
-    tabela2.auto_set_font_size(False)
-    tabela2.set_fontsize(10)
-    tabela2.scale(1.2, 1.2)
+    # Tabela das métricas globais abaixo
+    table_global = ax.table(
+        cellText=global_rows,
+        colLabels=column_labels,
+        cellLoc='center',
+        loc='center',
+        bbox=[0.26, 0.25, 0.48, 0.18]
+    )
 
-    for (i, j), cell in tabela2.get_celld().items():
-        cell.set_edgecolor('black')
-        if i == 0:
-            cell.set_facecolor('#d9d9d9')
-            cell.set_text_props(weight='bold')
-        else:
-            cell.set_facecolor('#f5f5f5')
+    table_classes.auto_set_font_size(False)
+    table_classes.set_fontsize(10)
+    table_classes.auto_set_column_width(col=list(range(len(column_labels))))
+    table_global.auto_set_font_size(False)
+    table_global.set_fontsize(10)
+    table_global.auto_set_column_width(col=list(range(len(column_labels))))
+    fig.tight_layout()
 
-    # ---- Título geral e layout ----
-    fig.suptitle('Relatório de Classificação', fontsize=14, y=0.98, weight='bold')
-    plt.subplots_adjust(hspace=0.5)
-
-    plt.savefig(f'classification_report_{MODEL_NAME}.png', dpi=300, bbox_inches='tight')
+    plt.title(f"Relatório de Classificação ({MODEL_NAME})", fontsize=15, pad=20)
+    plt.savefig(f"classification_report_{MODEL_NAME}.png", bbox_inches='tight', dpi=200)
     plt.show()
-
 
 def get_predictions(model, val_dataset, val_files, val_labels, CLASSES, BATCH_SIZE, MODEL_NAME):
     
@@ -119,20 +145,3 @@ def get_predictions(model, val_dataset, val_files, val_labels, CLASSES, BATCH_SI
     except Exception as e:
         print(f"Erro ao obter predições: {e}")
         return None, None, None, None, None
-    
-    
-if __name__ == "__main__":
-    
-    MODEL_NAME = 'teste AAAAAA'
-    MODEL_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\CNN\models\teste_model_feature_extraction.keras'
-    DATASER_DIR = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\teste_dataset'
-    
-    from data_pipeline import dataset_preparation
-    from tensorflow.keras.models import load_model
-    from config import BATCH_SIZE
-        
-    CLASSES, class_weights, train_dataset, val_dataset, train_files, val_files, train_labels, val_labels = dataset_preparation(DATASER_DIR)
-    
-    model = load_model(MODEL_PATH)
-    
-    results, y_true_labels, y_pred_labels, y_pred_proba, y_true_one_hot = get_predictions(model, val_dataset, val_files, val_labels, CLASSES, BATCH_SIZE, MODEL_NAME)
