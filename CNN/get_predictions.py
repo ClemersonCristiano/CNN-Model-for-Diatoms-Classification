@@ -7,16 +7,7 @@ from data_pipeline import create_dataset
 import matplotlib.pyplot as plt
 
 def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME="modelo"):
-    """
-    Plota gráfico tabular das métricas do relatório de classificação, com separação entre classes e métricas globais.
-
-    Parâmetros:
-        y_true_labels (array): Rótulos reais.
-        y_pred_labels (array): Rótulos previstos.
-        CLASSES (list): Lista de nomes das classes.
-        MODEL_NAME (str): Nome do modelo/arquivo.
-    """
-    # Cria o relatório como dict
+    
     class_report = classification_report(
         y_true_labels,
         y_pred_labels,
@@ -25,7 +16,7 @@ def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME
         output_dict=True
     )
 
-    # Dados das classes individuais
+    # Classes individuais
     class_rows = []
     for c in CLASSES:
         row = [
@@ -37,7 +28,7 @@ def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME
         ]
         class_rows.append(row)
 
-    # Dados das métricas globais (accuracy, macro avg, weighted avg)
+    # Métricas globais
     macro = class_report["macro avg"]
     weighted = class_report["weighted avg"]
     accuracy_val = round(class_report["accuracy"], 4)
@@ -63,8 +54,8 @@ def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME
 
     # Cabeçalhos
     column_labels = ["Classe", "Precision", "Recall", "F1-Score", "Support"]
+    global_labels = ["", "Precision", "Recall", "F1-Score", "Support"]
 
-    # Criando a figura do gráfico
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.axis('off')
 
@@ -76,10 +67,10 @@ def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME
         loc='center',
         bbox=[0.26, 0.5, 0.48, 0.35]
     )
-    # Tabela das métricas globais abaixo
+    # Tabela global separada, com célula a esquerda vazia
     table_global = ax.table(
         cellText=global_rows,
-        colLabels=column_labels,
+        colLabels=global_labels,
         cellLoc='center',
         loc='center',
         bbox=[0.26, 0.25, 0.48, 0.18]
@@ -90,7 +81,7 @@ def plot_classification_report(y_true_labels, y_pred_labels, CLASSES, MODEL_NAME
     table_classes.auto_set_column_width(col=list(range(len(column_labels))))
     table_global.auto_set_font_size(False)
     table_global.set_fontsize(10)
-    table_global.auto_set_column_width(col=list(range(len(column_labels))))
+    table_global.auto_set_column_width(col=list(range(len(global_labels))))
     fig.tight_layout()
 
     plt.title(f"Relatório de Classificação ({MODEL_NAME})", fontsize=15, pad=20)
