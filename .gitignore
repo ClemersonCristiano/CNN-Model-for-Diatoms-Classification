@@ -1,6 +1,11 @@
-CNN/models
+
 /dataset_final
 /venv
 /pipeline_tratamento/__pycache__
 /CNN/__pycache__
 CNN.zip
+CNN/models/modelo_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_Model_10k.keras
+CNN/models/modelo_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_Model_22k.keras
+CNN/models/modelo_7k/feature_extraction_model_7k/Diatom_Classifier_Feature_Extraction_Model_7k.keras
+CNN/models/modelo_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_Model_7k.keras
+CNN/models/modelo_22k/feature_extraction_model_22k/Diatom_Classifier_Feature_Extraction_Model_22k.keras
