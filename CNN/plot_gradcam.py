@@ -138,7 +138,8 @@ if __name__ == "__main__":
             heatmap, pred_idx = make_gradcam_heatmap(img_array, model, LAST_CONV_LAYER)
             
             # Obtém o nome da classe
-            class_name = CLASSES.get(pred_idx, f"Classe {pred_idx}")
+            class_name = CLASSES[pred_idx]
+            print(f"Classe prevista: {class_name}")
             
             # Salva e exibe com o nome correto
             save_composite_image(IMAGE_PATH, heatmap, OUTPUT_PATH, class_name, alpha=0.6)
