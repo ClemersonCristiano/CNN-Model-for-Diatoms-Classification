@@ -5,6 +5,7 @@ IMAGE_SIZE = 400
 NUM_CHANNELS = 3
 BATCH_SIZE = 32
 AUTOTUNE = tf.data.AUTOTUNE # Otimização do TensorFlow
+LAST_CONV_LAYER = 'resnet50v2'
 
 class DIATOMS_CLASSES:
     def __init__(self):
