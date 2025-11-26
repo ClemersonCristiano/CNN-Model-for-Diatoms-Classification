@@ -6,6 +6,7 @@ from ROC_AUC_curves import roc_auc_curves
 from get_predictions import get_predictions
 from plot_confusion_matrix import plot_confusion_matrix
 from plot_tsne_visualization import plot_tsne_visualization
+from plot_gradcam import plot_gradcam
         
 def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training):
 
@@ -35,6 +36,10 @@ def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training):
             print("\nPlotando Visualização t-SNE...")
             plot_tsne_visualization(model, val_dataset, y_true_labels, CLASSES, MODEL_NAME)
             
+            print("Plotando GradCam...")
+            IMAGE_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\validação\Pinnularia_modificada\tratadas\Pinnularia\Pinnularia_image1015.tif_20251105_161224_396856.png'
+            plot_gradcam(MODEL_PATH, IMAGE_PATH, CLASSES)
+            
         else:
             print("Erro ao carregar o modelo.")
             
@@ -43,9 +48,9 @@ def evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training):
         
 if __name__ == "__main__":
     
-    DATASER_DIR = ""
-    MODEL_PATH = ""
-    MODEL_NAME = ""
+    DATASER_DIR = r"D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\Dataset_Final_Puro_Tratad"
+    MODEL_PATH = r"D:\facul\Github\CNN-model-for-diatom-classification\CNN\models\modelo_7k\fineTuned_model_7k\Diatom_Classifier_FineTuned_Model_7k.keras"
+    MODEL_NAME = "Model_7k_Final"
     is_training = False
     
     evaluate_model(DATASER_DIR, MODEL_PATH, MODEL_NAME, is_training)
