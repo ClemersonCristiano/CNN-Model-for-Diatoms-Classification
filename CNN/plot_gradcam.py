@@ -82,7 +82,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
     
     return heatmap.numpy(), int(pred_index)
 
-def save_composite_image(img_path, heatmap, save_path, predicted_name, alpha):
+def save_composite_image(img_path, heatmap, predicted_name, alpha):
     """
     Gera e salva a imagem composta, exibindo o nome da classe predita no título.
     """
@@ -114,23 +114,16 @@ def save_composite_image(img_path, heatmap, save_path, predicted_name, alpha):
     plt.title(f"Predição: {predicted_name} | Arquivo: {os.path.basename(img_path)}")
     plt.axis('off')
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f"Gradcam_Result_{predicted_name}.png", dpi=300, bbox_inches='tight')
     plt.show()
-    print(f"Resultado salvo em: {save_path} (Classe Predita: {predicted_name})")
-
-# --- EXEMPLO DE USO ---
-if __name__ == "__main__":
-    
-    # 1. Defina os caminhos
-    MODEL_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\CNN\models\modelo_7k\fineTuned_model_7k\Diatom_Classifier_FineTuned_Model_7k.keras'
-    IMAGE_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\validação\Pinnularia_modificada\tratadas\Pinnularia\Pinnularia_image1015.tif_20251105_161224_396856.png'
-    OUTPUT_PATH = 'gradcam_analise.png'
+        
+def plot_gradcam(MODEL_PATH, IMAGE_PATH, CLASSES):
 
     if os.path.exists(MODEL_PATH) and os.path.exists(IMAGE_PATH):
-        print("Carregando modelo...")
+        print(f"Carregando modelo: {MODEL_PATH}")
         model = tf.keras.models.load_model(MODEL_PATH)
         
-        print(f"Processando {IMAGE_PATH}...")
+        print(f"Processando: {IMAGE_PATH}...")
         img_array = get_img_array(IMAGE_PATH)
         
         if img_array is not None:
@@ -142,7 +135,7 @@ if __name__ == "__main__":
             print(f"Classe prevista: {class_name}")
             
             # Salva e exibe com o nome correto
-            save_composite_image(IMAGE_PATH, heatmap, OUTPUT_PATH, class_name, alpha=0.6)
+            save_composite_image(IMAGE_PATH, heatmap, class_name, alpha=0.6)
             
     else:
         print("Por favor, configure MODEL_PATH e IMAGE_PATH no script.")
