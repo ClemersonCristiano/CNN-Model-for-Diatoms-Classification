@@ -5,6 +5,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.applications import resnet_v2
 from config import IMAGE_SIZE
 from config import DIATOMS_CLASSES
+from plot_gradcam import plot_gradcam
 
 CLASSES = DIATOMS_CLASSES().Diatoms_Classes_names
 
@@ -77,7 +78,7 @@ def predict_diatom_class(model, CLASSES, image_path):
         print(f"Erro durante a predição: {e}")
         return "Erro", 0.0, []
     
-def prediction_results(model, CLASSES, IMAGE_PATH):
+def prediction_results(model, CLASSES, IMAGE_PATH, classe_real):
     
     try:
         classe_prevista, confianca, todas_predicoes = predict_diatom_class(model, CLASSES, IMAGE_PATH)
@@ -99,6 +100,9 @@ def prediction_results(model, CLASSES, IMAGE_PATH):
             
             for classe, prob in results:
                 print(f"  {classe:12}: {prob * 100:>6.2f}%")
+                
+        print("Plotando GradCam...")
+        plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real)
     
     except Exception as e:
         print(f"Erro ao exibir os resultados da predição: {e}")
@@ -111,11 +115,12 @@ def predict():
     model = load_trained_model(MODEL_PATH)
             
     # Caminho para a imagem
-    IMAGE_PATH = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\dataset_final\Dataset_Final_Tratado\2augmentations\dataset\Pinnularia\Pinnularia_PAML_006.png_20251016_143924_215381.png'
+    IMAGE_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\validação\Pinnularia_modificada\tratadas\Pinnularia\Pinnularia_image1015.tif_20251105_161224_396856.png'
+    classe_real = "Pinnularia"
     print(f"\nFazendo predição para a imagem: {IMAGE_PATH}...")
     
     try:
-        prediction_results(model, CLASSES, IMAGE_PATH)
+        prediction_results(model, CLASSES, IMAGE_PATH, classe_real)
         
     except Exception as e:
         print(f"Ocorreu um erro inesperado: {e}")
