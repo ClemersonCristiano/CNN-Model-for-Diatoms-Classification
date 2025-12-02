@@ -102,7 +102,7 @@ def prediction_results(model, CLASSES, IMAGE_PATH, classe_real):
                 print(f"  {classe:12}: {prob * 100:>6.2f}%")
                 
         print("Plotando GradCam...")
-        plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real)
+        plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real, confidence=confianca)
     
     except Exception as e:
         print(f"Erro ao exibir os resultados da predição: {e}")
@@ -110,12 +110,12 @@ def prediction_results(model, CLASSES, IMAGE_PATH, classe_real):
 def predict():
     
     # Caminho para o arquivo do seu modelo
-    MODEL_PATH = r'D:\facul\Disciplinas\VisãoComp\ProjetoFinal\src\CNN\models\diatom_classifier_best_model_finetuned.keras'
+    MODEL_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\CNN\models\modelo_7k\fineTuned_model_7k\Diatom_Classifier_FineTuned_Model_7k.keras'
     
     model = load_trained_model(MODEL_PATH)
             
     # Caminho para a imagem
-    IMAGE_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\validação\Pinnularia_modificada\tratadas\Pinnularia\Pinnularia_image1015.tif_20251105_161224_396856.png'
+    IMAGE_PATH = r'D:\facul\Github\CNN-model-for-diatom-classification\dataset_final\validação\Pinnularia_modificada\tratadas\Pinnularia\Pinnularia_image1025.tif_20251105_161255_315439.png'
     classe_real = "Pinnularia"
     print(f"\nFazendo predição para a imagem: {IMAGE_PATH}...")
     

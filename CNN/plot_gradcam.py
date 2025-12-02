@@ -82,10 +82,14 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
     
     return heatmap.numpy(), int(pred_index)
 
-def save_composite_image(img_path, heatmap, predicted_name, classe_real, alpha):
+def save_composite_image(img_path, heatmap, predicted_name, classe_real, confidence, alpha):
     """
     Gera e salva a imagem composta, exibindo o nome da classe predita no título.
+    
     """
+    
+    file_path = os.path.basename(img_path)
+    
     # Carregar imagem original visualmente
     img = tf.io.read_file(img_path)
     img = tf.io.decode_image(img, channels=3, expand_animations=False)
@@ -111,19 +115,19 @@ def save_composite_image(img_path, heatmap, predicted_name, classe_real, alpha):
     
     resultado = ''
     if classe_real != predicted_name:
-        resultado = 'ERROU'
+        resultado = 'INCORRECT'
     else:
-        resultado = 'ACERTOU'
+        resultado = 'CORRECT'
     
     plt.figure(figsize=(15, 5))
     plt.imshow(panel)
-    plt.title(f"O modelo [{resultado}] | Classe Real: {classe_real} | Predição: {predicted_name} | Arquivo: {os.path.basename(img_path)}")
+    plt.title(f"[{resultado}] | Real Class: {classe_real} | Predicted Class: {predicted_name} | Confidence: {confidence*100:.2f}% | File: {file_path}")
     plt.axis('off')
     plt.tight_layout()
-    plt.savefig(f"Gradcam_Result_{classe_real}_{predicted_name}.png", dpi=300, bbox_inches='tight')
+    plt.savefig(f"Gradcam_Result_{classe_real}_{predicted_name}_{file_path}.png", dpi=300, bbox_inches='tight')
     plt.show()
         
-def plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real):
+def plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real, confidence):
 
     if model is not None and IMAGE_PATH is not None:
         
@@ -139,7 +143,7 @@ def plot_gradcam(model, IMAGE_PATH, CLASSES, classe_real):
             print(f"Classe prevista: {class_name}")
             
             # Salva e exibe com o nome correto
-            save_composite_image(IMAGE_PATH, heatmap, class_name, classe_real, alpha=0.6)
+            save_composite_image(IMAGE_PATH, heatmap, class_name, classe_real, confidence, alpha=0.6)
             
     else:
         print("Por favor, configure MODEL_PATH e IMAGE_PATH no script.")
