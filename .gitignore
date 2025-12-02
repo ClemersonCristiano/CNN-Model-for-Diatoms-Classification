@@ -9,3 +9,4 @@ CNN/models/modelo_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_Model_22k.
 CNN/models/modelo_7k/feature_extraction_model_7k/Diatom_Classifier_Feature_Extraction_Model_7k.keras
 CNN/models/modelo_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_Model_7k.keras
 CNN/models/modelo_22k/feature_extraction_model_22k/Diatom_Classifier_Feature_Extraction_Model_22k.keras
+CNN/models/modelo_7k/fineTuned_model_7k/Pinnularia/gradcam_predicts
