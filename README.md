@@ -371,14 +371,14 @@ O script retornará:
 <b>Matriz de Confusão</b>
 </td>
 <td align="center">
-<img src="CNN/models/modelo_22k/feature_extraction_model_22k/roc_auc_curves_Feature_Extraction_Model_22k.png" width="400px" />
+<img src="CNN/models/modelo_22k/feature_extraction_model_22k/roc_auc_curves_Feature_Extraction_Modelo_22k.png" width="400px" />
 <br />
 <b>Curvas ROC-AUC</b>
 </td>
 </tr>
 <tr>
 <td align="center">
-<img src="CNN/models/modelo_22k/feature_extraction_model_22k/tsne_visualization_Feature_Extraction_Model_22k.png" width="400px" />
+<img src="CNN/models/modelo_22k/feature_extraction_model_22k/tsne_visualization_Feature_Extraction_Modelo_22k.png" width="400px" />
 <br />
 <b>Visualização t-SNE</b>
 </td>
