@@ -82,7 +82,9 @@ CNN-Model-for-Diatoms-Classification/
 │   ├── removerAug.py                          # Remoção de augmentations
 │   └── limpar_terminal.py                     # Limpeza do terminal
 │
-├── requirements.txt                           # Dependências do projeto
+├── requirements.txt                           # Dependências Python do projeto
+├── setup.sh                                   # Script de instalação (Linux/macOS)
+├── setup.bat                                  # Script de instalação (Windows)
 ├── .gitignore                                 # Arquivos ignorados pelo Git
 ├── .gitattributes                             # Atributos do Git
 └── README.md                                  # 📖 Este arquivo
@@ -94,15 +96,60 @@ CNN-Model-for-Diatoms-Classification/
 
 ### 3.1 📥 Instalação
 
-Clone o repositório e instale as dependências:
+Clone o repositório:
 
 ```bash
 git clone https://github.com/ClemersonCristiano/CNN-Model-for-Diatoms-Classification.git
 cd CNN-Model-for-Diatoms-Classification
-pip install -r requirements.txt
 ```
 
-> ⚠️ **Nota:** Este projeto requer Python 3.8+ e as bibliotecas especificadas no `requirements.txt`.
+#### 🐧 Linux (recomendado: usar o script de setup)
+
+O projeto utiliza `tkinter` para as janelas de seleção de arquivo. No Linux essa dependência **não vem incluída no Python** e precisa ser instalada separadamente via gerenciador de pacotes do sistema (`apt-get`).
+
+O script `setup.sh` cuida de tudo automaticamente: verifica e instala o `python3-tk`, cria o ambiente virtual e instala as dependências Python:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Após o setup, ative o ambiente virtual:
+
+```bash
+source venv/bin/activate
+```
+
+#### 🍎 macOS (recomendado: usar o script de setup)
+
+No macOS o `tkinter` já está incluído no Python. O `setup.sh` cria o ambiente virtual e instala as dependências:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Após o setup, ative o ambiente virtual:
+
+```bash
+source venv/bin/activate
+```
+
+#### 🪟 Windows (recomendado: usar o script de setup)
+
+No Windows o `tkinter` já está incluído no Python. Execute o `setup.bat` no Prompt de Comando (CMD):
+
+```bat
+setup.bat
+```
+
+Após o setup, ative o ambiente virtual:
+
+```bat
+venv\Scripts\activate
+```
+
+> ⚠️ **Nota:** Este projeto requer Python 3.8+. No Windows, certifique-se de instalar o Python pelo [instalador oficial](https://www.python.org/) marcando a opção **"tcl/tk and IDLE"**.
 
 ---
 
