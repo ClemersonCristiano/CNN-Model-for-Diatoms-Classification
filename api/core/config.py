@@ -1,4 +1,9 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
+
+# Always resolve .env relative to this file → api/.env
+_ENV_FILE = Path(__file__).parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -10,7 +15,7 @@ class Settings(BaseSettings):
     d1_api_token: str
 
     class Config:
-        env_file = ".env"
+        env_file = str(_ENV_FILE)
 
 
 settings = Settings()
