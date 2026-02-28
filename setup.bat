@@ -49,7 +49,12 @@ REM --- Instalar dependencias ---
 echo [INFO] Ativando ambiente virtual e instalando dependencias...
 call venv\Scripts\activate.bat
 python -m pip install --upgrade pip -q
+
+echo [INFO] Instalando dependencias do projeto (CNN + pipeline)...
 pip install -r requirements.txt
+
+echo [INFO] Instalando dependencias da API (FastAPI + servicos)...
+pip install -r api\requirements.txt
 
 echo.
 echo +---------------------------------------------+
@@ -61,6 +66,9 @@ echo.
 echo    Para rodar o pipeline de pre-processamento:
 echo      cd pipeline_tratamento
 echo      python main.py
+echo.
+echo    Para rodar a API localmente (sem Docker):
+echo      uvicorn api.main:app --host 0.0.0.0 --port 7860 --reload
 echo +---------------------------------------------+
 echo.
 

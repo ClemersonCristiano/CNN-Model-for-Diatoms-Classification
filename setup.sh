@@ -43,7 +43,12 @@ echo ""
 echo "[INFO] Ativando ambiente virtual e instalando dependências..."
 source venv/bin/activate
 pip install --upgrade pip -q
+
+echo "[INFO] Instalando dependências do projeto (CNN + pipeline)..."
 pip install -r requirements.txt
+
+echo "[INFO] Instalando dependências da API (FastAPI + serviços)..."
+pip install -r api/requirements.txt
 
 echo ""
 echo "+---------------------------------------------+"
@@ -54,5 +59,8 @@ echo "     source venv/bin/activate"
 echo ""
 echo "   Para rodar o pipeline de pré-processamento:"
 echo "     cd pipeline_tratamento && python main.py"
+echo ""
+echo "   Para rodar a API localmente (sem Docker):"
+echo "     uvicorn api.main:app --host 0.0.0.0 --port 7860 --reload"
 echo "+---------------------------------------------+"
 echo ""

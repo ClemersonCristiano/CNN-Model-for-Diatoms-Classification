@@ -2,6 +2,7 @@
 /dataset_final
 /venv
 /pipeline_tratamento/__pycache__
+api/.env
 /CNN/__pycache__
 CNN.zip
 CNN/models/modelo_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_Model_10k.keras
