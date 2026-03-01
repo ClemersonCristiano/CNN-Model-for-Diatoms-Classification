@@ -28,9 +28,9 @@ _IMAGE_SIZE = 400
 _CLASSES = ["Encyonema", "Eunotia", "Gomphonema", "Navicula", "Pinnularia"]
 
 _MODEL_PATHS: dict[str, str] = {
-    "7k":  "CNN/models/modelo_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_Model_7k.keras",
-    "10k": "CNN/models/modelo_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_Model_10k.keras",
-    "22k": "CNN/models/modelo_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_Model_22k.keras",
+    "model_7k":  "CNN/models/modelo_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_Model_7k.keras",
+    "model_10k": "CNN/models/modelo_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_Model_10k.keras",
+    "model_22k": "CNN/models/modelo_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_Model_22k.keras",
 }
 
 # Global model registry — populated by load_models() at startup.

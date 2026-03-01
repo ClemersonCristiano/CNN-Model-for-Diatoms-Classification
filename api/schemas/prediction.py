@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class PredictRequest(BaseModel):
     image_id: str
-    model: Literal["7k", "10k", "22k"]
+    model: Literal["model_7k", "model_10k", "model_22k"]
 
 
 class PredictResponse(BaseModel):
