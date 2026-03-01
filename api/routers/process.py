@@ -18,8 +18,21 @@ router = APIRouter(prefix="/process", tags=["process"])
 _ALLOWED_TYPES = {"image/png", "image/jpeg", "image/bmp", "image/tiff"}
 _MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
+_401 = {"description": "Token inválido ou expirado",                        "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
+_413 = {"description": "Arquivo maior que 10 MB",                           "content": {"application/json": {"example": {"code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}}}}
+_422 = {"description": "Formato não suportado ou falha no processamento",   "content": {"application/json": {"example": {"code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}}}}
 
-@router.post("/treat", response_model=TreatResponse)
+
+@router.post(
+    "/treat",
+    response_model=TreatResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+        413: _413,
+        422: _422,
+    },
+)
 async def treat(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),

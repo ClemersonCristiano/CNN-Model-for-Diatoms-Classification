@@ -14,8 +14,22 @@ router = APIRouter(prefix="/images", tags=["images"])
 _ALLOWED_TYPES = {"image/png", "image/jpeg", "image/bmp", "image/tiff"}
 _MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
+_401 = {"description": "Token inválido ou expirado",       "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
+_404 = {"description": "Imagem não encontrada",            "content": {"application/json": {"example": {"code": 404, "error": "Image not found", "detail": "Image not found"}}}}
+_413 = {"description": "Arquivo maior que 10 MB",          "content": {"application/json": {"example": {"code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}}}}
+_422 = {"description": "Formato de arquivo não suportado", "content": {"application/json": {"example": {"code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}}}}
 
-@router.post("", response_model=ImageOut)
+
+@router.post(
+    "",
+    response_model=ImageOut,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+        413: _413,
+        422: _422,
+    },
+)
 async def upload_image(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),
@@ -44,7 +58,14 @@ async def upload_image(
     return ImageOut(**row, url=url)
 
 
-@router.get("", response_model=list[ImageOut])
+@router.get(
+    "",
+    response_model=list[ImageOut],
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+    },
+)
 async def list_images(current_user: dict = Depends(get_current_user)) -> list[ImageOut]:
     """List all images saved by the current user."""
     user_id = current_user["sub"]
@@ -56,7 +77,14 @@ async def list_images(current_user: dict = Depends(get_current_user)) -> list[Im
     return result
 
 
-@router.delete("/{image_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{image_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: _401,
+        404: _404,
+    },
+)
 async def delete_image(
     image_id: str,
     current_user: dict = Depends(get_current_user),

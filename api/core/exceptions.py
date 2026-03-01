@@ -7,19 +7,19 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
-        content={"error": exc.detail, "detail": str(exc.detail)},
+        content={"code": exc.status_code, "error": exc.detail, "detail": str(exc.detail)},
     )
 
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     return JSONResponse(
         status_code=422,
-        content={"error": "Validation error", "detail": exc.errors()},
+        content={"code": 422, "error": "Validation error", "detail": exc.errors()},
     )
 
 
 async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     return JSONResponse(
         status_code=500,
-        content={"error": "Internal server error"},
+        content={"code": 500, "error": "Internal server error"},
     )

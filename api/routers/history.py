@@ -11,8 +11,18 @@ from api.services import d1_service, r2_service
 
 router = APIRouter(prefix="/history", tags=["history"])
 
+_401 = {"description": "Token inválido ou expirado",       "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
+_404 = {"description": "Classificação não encontrada",     "content": {"application/json": {"example": {"code": 404, "error": "Classification not found", "detail": "Classification not found"}}}}
 
-@router.get("", response_model=HistoryList)
+
+@router.get(
+    "",
+    response_model=HistoryList,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+    },
+)
 async def list_history(current_user: dict = Depends(get_current_user)) -> HistoryList:
     """Return all classifications for the current user, most recent first."""
     user_id = current_user["sub"]
@@ -22,7 +32,15 @@ async def list_history(current_user: dict = Depends(get_current_user)) -> Histor
     return HistoryList(items=items, total=len(items))
 
 
-@router.get("/{classification_id}", response_model=ClassificationOut)
+@router.get(
+    "/{classification_id}",
+    response_model=ClassificationOut,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+        404: _404,
+    },
+)
 async def get_classification(
     classification_id: str,
     current_user: dict = Depends(get_current_user),

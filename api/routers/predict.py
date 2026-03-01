@@ -13,19 +13,36 @@ from api.services import d1_service, model_service, r2_service
 router = APIRouter(tags=["predict"])
 
 _MODEL_DESCRIPTIONS = {
-    "7k":  "ResNet50V2 fine-tuned on ~7 000 images",
-    "10k": "ResNet50V2 fine-tuned on ~10 000 images",
-    "22k": "ResNet50V2 fine-tuned on ~22 000 images (recommended)",
+    "model_7k":  "trained with ~7k curated images and dynamic augmentation (best model)",
+    "model_10k": "trained with ~10k pure images and dynamic augmentation",
+    "model_22k": "trained with ~22k curated images and 3x augmentations (raw augmentation, images from model_7k x3)",
 }
 
+_401 = {"description": "Token inválido ou expirado",        "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
+_404 = {"description": "Imagem não encontrada",             "content": {"application/json": {"example": {"code": 404, "error": "Image not found", "detail": "Image not found"}}}}
+_503 = {"description": "Modelo solicitado não carregado",   "content": {"application/json": {"example": {"code": 503, "error": "Model not loaded", "detail": "Model not loaded"}}}}
 
-@router.get("/models", response_model=list[ModelInfo])
+
+@router.get(
+    "/models",
+    response_model=list[ModelInfo],
+    status_code=status.HTTP_200_OK,
+)
 async def list_models() -> list[ModelInfo]:
     """Return the list of available models."""
     return [ModelInfo(id=k, description=v) for k, v in _MODEL_DESCRIPTIONS.items()]
 
 
-@router.post("/predict", response_model=PredictResponse)
+@router.post(
+    "/predict",
+    response_model=PredictResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: _401,
+        404: _404,
+        503: _503,
+    },
+)
 async def predict(
     body: PredictRequest,
     current_user: dict = Depends(get_current_user),
