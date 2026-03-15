@@ -10,6 +10,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 
 from api.dependencies import get_current_user
+from api.schemas.common import ApiResponse
 from api.schemas.image import TreatResponse
 from api.services import image_service, r2_service, d1_service
 
@@ -18,14 +19,53 @@ router = APIRouter(prefix="/process", tags=["process"])
 _ALLOWED_TYPES = {"image/png", "image/jpeg", "image/bmp", "image/tiff"}
 _MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
-_401 = {"description": "Token inválido ou expirado",                        "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
-_413 = {"description": "Arquivo maior que 10 MB",                           "content": {"application/json": {"example": {"code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}}}}
-_422 = {"description": "Formato não suportado ou falha no processamento",   "content": {"application/json": {"example": {"code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}}}}
+_401 = {
+    "description": "Token inválido ou expirado",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "Request failed",
+                "code": 401,
+                "error": "Invalid or expired token",
+                "detail": "Invalid or expired token",
+            }
+        }
+    },
+}
+_413 = {
+    "description": "Arquivo maior que 10 MB",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "Request failed",
+                "code": 413,
+                "error": "File exceeds the 10 MB limit",
+                "detail": "File exceeds the 10 MB limit",
+            }
+        }
+    },
+}
+_422 = {
+    "description": "Formato não suportado ou falha no processamento",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "Request failed",
+                "code": 422,
+                "error": "Unsupported file type: image/gif",
+                "detail": "Unsupported file type: image/gif",
+            }
+        }
+    },
+}
 
 
 @router.post(
     "/treat",
-    response_model=TreatResponse,
+    response_model=ApiResponse[TreatResponse],
     status_code=status.HTTP_200_OK,
     responses={
         401: _401,
@@ -36,7 +76,7 @@ _422 = {"description": "Formato não suportado ou falha no processamento",   "co
 async def treat(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),
-) -> TreatResponse:
+) -> ApiResponse[TreatResponse]:
     """Receive an image, apply rembg + CLAHE + resize, save to R2 + D1."""
     if file.content_type not in _ALLOWED_TYPES:
         raise HTTPException(
@@ -65,4 +105,7 @@ async def treat(
     await d1_service.create_image(image_id, user_id, r2_key, file.filename)
     url = await asyncio.to_thread(r2_service.get_presigned_url, r2_key)
 
-    return TreatResponse(image_id=image_id, url=url)
+    return ApiResponse(
+        message="Image treated and saved successfully",
+        data=TreatResponse(image_id=image_id, url=url),
+    )

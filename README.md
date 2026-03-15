@@ -155,6 +155,18 @@ venv\Scripts\activate
 
 ### 3.2 🖼️ Pipeline de Pré-processamento
 
+### 3.1.1 ⚡ Comando rápido da API
+
+Após a instalação, você pode subir a API com o comando padronizado:
+
+```bash
+run diatoms
+```
+
+Se for a primeira vez, abra um novo terminal (ou rode `source ~/.zshrc`) para garantir que `~/.local/bin` esteja no `PATH`.
+
+> O launcher `run diatoms` usa automaticamente o `venv` do projeto (quando disponível) e evita conflito de variáveis globais do R2.
+
 O pipeline de pré-processamento permite preparar as imagens de diatomáceas antes do treinamento:
 
 ```bash

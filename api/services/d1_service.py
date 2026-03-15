@@ -8,6 +8,7 @@ Reference:
 """
 
 import httpx
+from fastapi import HTTPException
 
 from api.core.config import settings
 
@@ -23,8 +24,7 @@ def _headers() -> dict:
 
 def _url() -> str:
     return (
-        f"{_BASE}/accounts/{settings.cloudflare_account_id}"
-        f"/d1/database/{settings.d1_database_id}/query"
+        f"{_BASE}/accounts/{settings.cloudflare_account_id}/d1/database/{settings.d1_database_id}/query"
     )
 
 
@@ -33,10 +33,16 @@ async def execute(sql: str, params: list | None = None) -> dict:
     payload = {"sql": sql, "params": params or []}
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.post(_url(), headers=_headers(), json=payload)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"D1 API error {e.response.status_code}: {e.response.text[:200]}",
+        )
     data = response.json()
     if not data.get("success"):
-        raise RuntimeError(f"D1 query failed: {data.get('errors')}")
+        raise HTTPException(status_code=502, detail=f"D1 query failed: {data.get('errors')}")
     return data
 
 
@@ -101,6 +107,13 @@ async def delete_image(id: str, user_id: str) -> None:
     await execute(
         "DELETE FROM images WHERE id = ? AND user_id = ?",
         [id, user_id],
+    )
+
+
+async def delete_classifications_by_image(image_id: str, user_id: str) -> None:
+    await execute(
+        "DELETE FROM classifications WHERE image_id = ? AND user_id = ?",
+        [image_id, user_id],
     )
 
 

@@ -7,6 +7,7 @@ api/core/__pycache__
 api/routers/__pycache__
 api/schemas/__pycache__
 api/services/__pycache__
+api/tests/__pycache__
 api/.env
 /CNN/__pycache__
 CNN.zip

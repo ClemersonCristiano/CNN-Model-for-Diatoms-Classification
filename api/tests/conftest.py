@@ -21,9 +21,9 @@ def _make_mock_model(probs: list[float] | None = None) -> MagicMock:
 def patch_models():
     """Patch MODELS with mocks so tests never need .keras files on disk."""
     model_service_module.MODELS = {
-        "7k":  _make_mock_model(),
-        "10k": _make_mock_model(),
-        "22k": _make_mock_model([0.9, 0.025, 0.025, 0.025, 0.025]),
+        "model_7k":  _make_mock_model(),
+        "model_10k": _make_mock_model(),
+        "model_22k": _make_mock_model([0.9, 0.025, 0.025, 0.025, 0.025]),
     }
 
 

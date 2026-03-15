@@ -123,7 +123,7 @@ INFO:     Uvicorn running on http://0.0.0.0:7860
 
 ```bash
 curl http://localhost:7860/health
-# {"status":"ok"}
+# {"success":true,"message":"API is healthy","data":{"status":"ok"}}
 ```
 
 Ou acesse `http://localhost:7860/docs` para a interface Swagger.
@@ -143,9 +143,9 @@ Verificar se os modelos estão no lugar:
 
 ```bash
 find CNN/models -name "*.keras"
-# CNN/models/modelo_model_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_model_7k.keras
-# CNN/models/modelo_model_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_model_10k.keras
-# CNN/models/modelo_model_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_model_22k.keras
+# CNN/models/modelo_7k/fineTuned_model_7k/Diatom_Classifier_FineTuned_Model_7k.keras
+# CNN/models/modelo_10k/fineTuned_model_10k/Diatom_Classifier_FineTuned_Model_10k.keras
+# CNN/models/modelo_22k/fineTuned_model_22k/Diatom_Classifier_FineTuned_Model_22k.keras
 ```
 
 ### 1. Build da imagem
@@ -189,7 +189,7 @@ docker rm diatoms
 
 ```bash
 curl http://localhost:7860/health
-# {"status":"ok"}
+# {"success":true,"message":"API is healthy","data":{"status":"ok"}}
 ```
 
 ### 5. Comandos úteis
@@ -236,6 +236,8 @@ Authorization: Bearer <google_id_token>
 
 ## Endpoints
 
+> **Contrato vigente (resumo):** respostas de sucesso usam envelope `{ "success": true, "message": "...", "data": ... }`. Respostas de erro usam `{ "success": false, "message": "...", "code": ..., "error": "...", "detail": ... }`.
+
 ### Health Check
 
 #### `GET /health`
@@ -249,7 +251,13 @@ Verifica se a API está no ar. Usado por serviços de monitoramento.
 | `200 OK` | API operacional |
 
 ```json
-{"status": "ok"}
+{
+  "success": true,
+  "message": "API is healthy",
+  "data": {
+    "status": "ok"
+  }
+}
 ```
 
 ---
@@ -278,16 +286,20 @@ Valida um Google ID Token e cria ou recupera o usuário no banco.
 `200 OK`:
 ```json
 {
-  "id": "116234567890123456789",
-  "email": "usuario@gmail.com",
-  "name": "Nome Sobrenome",
-  "created_at": "2026-02-28T18:00:00"
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "id": "116234567890123456789",
+    "email": "usuario@gmail.com",
+    "name": "Nome Sobrenome",
+    "created_at": "2026-02-28T18:00:00"
+  }
 }
 ```
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid Google token", "detail": "Invalid Google token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid Google token", "detail": "Invalid Google token"}
 ```
 
 ---
@@ -309,21 +321,27 @@ Retorna o perfil do usuário autenticado.
 `200 OK`:
 ```json
 {
-  "id": "116234567890123456789",
-  "email": "usuario@gmail.com",
-  "name": "Nome Sobrenome",
-  "created_at": "2026-02-28T18:00:00"
+  "success": true,
+  "message": "User profile retrieved",
+  "data": {
+    "id": "116234567890123456789",
+    "email": "usuario@gmail.com",
+    "name": "Nome Sobrenome",
+    "created_at": "2026-02-28T18:00:00"
+  }
 }
 ```
 
+`model_used` segue exatamente os IDs dos modelos da API: `"model_7k"`, `"model_10k"`, `"model_22k"`.
+
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `404 Not Found`:
 ```json
-{"code": 404, "error": "User not found", "detail": "User not found"}
+{"success": false, "message": "Request failed", "code": 404, "error": "User not found", "detail": "User not found"}
 ```
 
 ---
@@ -367,8 +385,12 @@ curl -X POST http://localhost:7860/api/process/treat \
 `200 OK`:
 ```json
 {
-  "image_id": "550e8400-e29b-41d4-a716-446655440000",
-  "url": "https://r2.cloudflare.com/...?X-Amz-Expires=3600&..."
+  "success": true,
+  "message": "Image treated and saved successfully",
+  "data": {
+    "image_id": "550e8400-e29b-41d4-a716-446655440000",
+    "url": "https://r2.cloudflare.com/...?X-Amz-Expires=3600&..."
+  }
 }
 ```
 
@@ -379,17 +401,17 @@ curl -X POST http://localhost:7860/api/process/treat \
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `413 Request Entity Too Large`:
 ```json
-{"code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}
+{"success": false, "message": "Request failed", "code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}
 ```
 
 `422 Unprocessable Entity`:
 ```json
-{"code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}
+{"success": false, "message": "Request failed", "code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}
 ```
 
 ---
@@ -420,28 +442,34 @@ Salva uma imagem já tratada diretamente no R2 + D1 (sem aplicar o pipeline).
 `200 OK`:
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "user_id": "116234567890123456789",
-  "r2_key": "users/116.../images/550e....png",
-  "original_name": "diatoma.png",
-  "created_at": "2026-02-28T18:00:00",
-  "url": "https://r2.cloudflare.com/...?X-Amz-Expires=3600&..."
+  "success": true,
+  "message": "Image uploaded successfully",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "user_id": "116234567890123456789",
+    "r2_key": "users/116.../images/550e....png",
+    "original_name": "diatoma.png",
+    "created_at": "2026-02-28T18:00:00",
+    "url": "https://r2.cloudflare.com/...?X-Amz-Expires=3600&..."
+  }
 }
 ```
 
+`model_used` segue exatamente os IDs dos modelos da API: `"model_7k"`, `"model_10k"`, `"model_22k"`.
+
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `413 Request Entity Too Large`:
 ```json
-{"code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}
+{"success": false, "message": "Request failed", "code": 413, "error": "File exceeds the 10 MB limit", "detail": "File exceeds the 10 MB limit"}
 ```
 
 `422 Unprocessable Entity`:
 ```json
-{"code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}
+{"success": false, "message": "Request failed", "code": 422, "error": "Unsupported file type: image/gif", "detail": "Unsupported file type: image/gif"}
 ```
 
 ---
@@ -468,21 +496,25 @@ curl http://localhost:7860/api/images \
 
 `200 OK`:
 ```json
-[
-  {
-    "id": "550e8400-...",
-    "user_id": "116...",
-    "r2_key": "users/.../images/....png",
-    "original_name": "diatoma.png",
-    "created_at": "2026-02-28T18:00:00",
-    "url": "https://r2.cloudflare.com/..."
-  }
-]
+{
+  "success": true,
+  "message": "Images retrieved successfully",
+  "data": [
+    {
+      "id": "550e8400-...",
+      "user_id": "116...",
+      "r2_key": "users/.../images/....png",
+      "original_name": "diatoma.png",
+      "created_at": "2026-02-28T18:00:00",
+      "url": "https://r2.cloudflare.com/..."
+    }
+  ]
+}
 ```
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 ---
@@ -504,18 +536,31 @@ curl -X DELETE http://localhost:7860/api/images/550e8400-e29b-41d4-a716-44665544
 
 | Código | Situação |
 |---|---|
-| `204 No Content` | Imagem removida com sucesso (sem body) |
+| `200 OK` | Imagem removida com sucesso (com confirmação no body) |
 | `401 Unauthorized` | Token ausente ou inválido |
 | `404 Not Found` | Imagem não encontrada ou não pertence ao usuário |
 
+`200 OK`:
+```json
+{
+  "success": true,
+  "message": "Image deleted successfully",
+  "data": {
+    "success": true,
+    "image_id": "550e8400-e29b-41d4-a716-446655440000",
+    "message": "Image deleted successfully"
+  }
+}
+```
+
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `404 Not Found`:
 ```json
-{"code": 404, "error": "Image not found", "detail": "Image not found"}
+{"success": false, "message": "Request failed", "code": 404, "error": "Image not found", "detail": "Image not found"}
 ```
 
 ---
@@ -534,20 +579,24 @@ Lista os modelos CNN disponíveis. Não requer autenticação.
 
 `200 OK`:
 ```json
-[
-  {
-    "id": "model_7k",
-    "description": "trained with ~7k curated images and dynamic augmentation (best model)"
-  },
-  {
-    "id": "model_10k",
-    "description": "trained with ~10k pure images and dynamic augmentation"
-  },
-  {
-    "id": "model_22k",
-    "description": "trained with ~22k curated images and 3x augmentations (raw augmentation, images from model_7k x3)"
-  }
-]
+{
+  "success": true,
+  "message": "Models retrieved successfully",
+  "data": [
+    {
+      "id": "model_7k",
+      "description": "trained with ~7k curated images and dynamic augmentation (best model)"
+    },
+    {
+      "id": "model_10k",
+      "description": "trained with ~10k pure images and dynamic augmentation"
+    },
+    {
+      "id": "model_22k",
+      "description": "trained with ~22k curated images and 3x augmentations (raw augmentation, images from model_7k x3)"
+    }
+  ]
+}
 ```
 
 ---
@@ -588,19 +637,24 @@ curl -X POST http://localhost:7860/api/predict \
 | `200 OK` | Inferência realizada com sucesso |
 | `401 Unauthorized` | Token ausente ou inválido |
 | `404 Not Found` | `image_id` não encontrado ou não pertence ao usuário |
+| `502 Bad Gateway` | Falha de acesso ao objeto no R2 |
 | `503 Service Unavailable` | Modelo solicitado não está carregado |
 
 `200 OK`:
 ```json
 {
-  "predicted_class": "Navicula",
-  "confidence": 0.9732,
-  "probabilities": {
-    "Encyonema": 0.0041,
-    "Eunotia": 0.0089,
-    "Gomphonema": 0.0063,
-    "Navicula": 0.9732,
-    "Pinnularia": 0.0075
+  "success": true,
+  "message": "Prediction completed successfully",
+  "data": {
+    "predicted_class": "Navicula",
+    "confidence": 0.9732,
+    "probabilities": {
+      "Encyonema": 0.0041,
+      "Eunotia": 0.0089,
+      "Gomphonema": 0.0063,
+      "Navicula": 0.9732,
+      "Pinnularia": 0.0075
+    }
   }
 }
 ```
@@ -613,17 +667,22 @@ curl -X POST http://localhost:7860/api/predict \
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `404 Not Found`:
 ```json
-{"code": 404, "error": "Image not found", "detail": "Image not found"}
+{"success": false, "message": "Request failed", "code": 404, "error": "Image not found", "detail": "Image not found"}
+```
+
+`502 Bad Gateway`:
+```json
+{"success": false, "message": "Request failed", "code": 502, "error": "R2 error: <ErrorCode>", "detail": "R2 error: <ErrorCode>"}
 ```
 
 `503 Service Unavailable`:
 ```json
-{"code": 503, "error": "Model not loaded", "detail": "Model not loaded"}
+{"success": false, "message": "Request failed", "code": 503, "error": "Model not loaded", "detail": "Model not loaded"}
 ```
 
 ---
@@ -646,32 +705,36 @@ Retorna todas as classificações do usuário, da mais recente para a mais antig
 `200 OK`:
 ```json
 {
-  "items": [
-    {
-      "id": "7d3f9a1b-...",
-      "user_id": "116...",
-      "image_id": "550e8400-...",
-      "model_used": "model_22k",
-      "predicted_class": "Navicula",
-      "confidence": 0.9732,
-      "probabilities": {
-        "Encyonema": 0.0041,
-        "Eunotia": 0.0089,
-        "Gomphonema": 0.0063,
-        "Navicula": 0.9732,
-        "Pinnularia": 0.0075
-      },
-      "created_at": "2026-02-28T18:00:00",
-      "image_url": "https://r2.cloudflare.com/..."
-    }
-  ],
-  "total": 1
+  "success": true,
+  "message": "History retrieved successfully",
+  "data": {
+    "items": [
+      {
+        "id": "7d3f9a1b-...",
+        "user_id": "116...",
+        "image_id": "550e8400-...",
+        "model_used": "model_22k",
+        "predicted_class": "Navicula",
+        "confidence": 0.9732,
+        "probabilities": {
+          "Encyonema": 0.0041,
+          "Eunotia": 0.0089,
+          "Gomphonema": 0.0063,
+          "Navicula": 0.9732,
+          "Pinnularia": 0.0075
+        },
+        "created_at": "2026-02-28T18:00:00",
+        "image_url": "https://r2.cloudflare.com/..."
+      }
+    ],
+    "total": 1
+  }
 }
 ```
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 ---
@@ -693,47 +756,55 @@ Retorna uma classificação específica com a URL presignada da imagem.
 `200 OK`:
 ```json
 {
-  "id": "7d3f9a1b-...",
-  "user_id": "116...",
-  "image_id": "550e8400-...",
-  "model_used": "model_22k",
-  "predicted_class": "Navicula",
-  "confidence": 0.9732,
-  "probabilities": {
-    "Encyonema": 0.0041,
-    "Eunotia": 0.0089,
-    "Gomphonema": 0.0063,
-    "Navicula": 0.9732,
-    "Pinnularia": 0.0075
-  },
-  "created_at": "2026-02-28T18:00:00",
-  "image_url": "https://r2.cloudflare.com/..."
+  "success": true,
+  "message": "Classification retrieved successfully",
+  "data": {
+    "id": "7d3f9a1b-...",
+    "user_id": "116...",
+    "image_id": "550e8400-...",
+    "model_used": "model_22k",
+    "predicted_class": "Navicula",
+    "confidence": 0.9732,
+    "probabilities": {
+      "Encyonema": 0.0041,
+      "Eunotia": 0.0089,
+      "Gomphonema": 0.0063,
+      "Navicula": 0.9732,
+      "Pinnularia": 0.0075
+    },
+    "created_at": "2026-02-28T18:00:00",
+    "image_url": "https://r2.cloudflare.com/..."
+  }
 }
 ```
 
 `401 Unauthorized`:
 ```json
-{"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
+{"success": false, "message": "Request failed", "code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}
 ```
 
 `404 Not Found`:
 ```json
-{"code": 404, "error": "Classification not found", "detail": "Classification not found"}
+{"success": false, "message": "Request failed", "code": 404, "error": "Classification not found", "detail": "Classification not found"}
 ```
 
 ---
 
 ## Erros
 
-Todos os erros seguem o formato:
+Todos os erros seguem o formato base:
 
 ```json
 {
+  "success": false,
+  "message": "<mensagem>",
   "code": 400,
   "error": "Mensagem de erro resumida",
-  "detail": "Mensagem descritiva do erro"
+  "detail": "Mensagem descritiva do erro ou lista de validação"
 }
 ```
+
+> Observação: para erros de validação (`422`), `message` é `Validation failed` e `detail` contém a lista de erros do FastAPI/Pydantic.
 
 | Código | Significado |
 |---|---|
@@ -741,6 +812,7 @@ Todos os erros seguem o formato:
 | `404` | Recurso não encontrado |
 | `413` | Arquivo maior que 10 MB |
 | `422` | Formato de arquivo não suportado ou body inválido |
+| `502` | Erro de integração com R2 (upstream) |
 | `503` | Modelo CNN não carregado |
 | `500` | Erro interno do servidor |
 

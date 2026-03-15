@@ -6,35 +6,65 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.dependencies import get_current_user
+from api.schemas.common import ApiResponse
 from api.schemas.history import ClassificationOut, HistoryList
 from api.services import d1_service, r2_service
 
 router = APIRouter(prefix="/history", tags=["history"])
 
-_401 = {"description": "Token inválido ou expirado",       "content": {"application/json": {"example": {"code": 401, "error": "Invalid or expired token", "detail": "Invalid or expired token"}}}}
-_404 = {"description": "Classificação não encontrada",     "content": {"application/json": {"example": {"code": 404, "error": "Classification not found", "detail": "Classification not found"}}}}
+_401 = {
+    "description": "Token inválido ou expirado",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "Request failed",
+                "code": 401,
+                "error": "Invalid or expired token",
+                "detail": "Invalid or expired token",
+            }
+        }
+    },
+}
+_404 = {
+    "description": "Classificação não encontrada",
+    "content": {
+        "application/json": {
+            "example": {
+                "success": False,
+                "message": "Request failed",
+                "code": 404,
+                "error": "Classification not found",
+                "detail": "Classification not found",
+            }
+        }
+    },
+}
 
 
 @router.get(
     "",
-    response_model=HistoryList,
+    response_model=ApiResponse[HistoryList],
     status_code=status.HTTP_200_OK,
     responses={
         401: _401,
     },
 )
-async def list_history(current_user: dict = Depends(get_current_user)) -> HistoryList:
+async def list_history(current_user: dict = Depends(get_current_user)) -> ApiResponse[HistoryList]:
     """Return all classifications for the current user, most recent first."""
     user_id = current_user["sub"]
     # list_classifications already JOINs with images — no N+1
     rows = await d1_service.list_classifications(user_id)
     items = [await _row_to_out(row) for row in rows]
-    return HistoryList(items=items, total=len(items))
+    return ApiResponse(
+        message="History retrieved successfully",
+        data=HistoryList(items=items, total=len(items)),
+    )
 
 
 @router.get(
     "/{classification_id}",
-    response_model=ClassificationOut,
+    response_model=ApiResponse[ClassificationOut],
     status_code=status.HTTP_200_OK,
     responses={
         401: _401,
@@ -44,7 +74,7 @@ async def list_history(current_user: dict = Depends(get_current_user)) -> Histor
 async def get_classification(
     classification_id: str,
     current_user: dict = Depends(get_current_user),
-) -> ClassificationOut:
+) -> ApiResponse[ClassificationOut]:
     """Return a single classification with the image's presigned URL."""
     user_id = current_user["sub"]
 
@@ -53,7 +83,10 @@ async def get_classification(
     except LookupError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Classification not found")
 
-    return await _row_to_out(row)
+    return ApiResponse(
+        message="Classification retrieved successfully",
+        data=await _row_to_out(row),
+    )
 
 
 # ---------------------------------------------------------------------------

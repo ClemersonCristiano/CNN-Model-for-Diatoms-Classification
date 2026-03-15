@@ -1,24 +1,30 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from api.core.security import verify_google_token
+from api.services import d1_service
 
-# auto_error=False prevents HTTPBearer from raising 403 when the header is absent;
-# we raise 401 ourselves so all auth errors are consistent.
 _security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(_security),
 ) -> dict:
-    """Extract and validate the Bearer token; return user payload or raise 401."""
+    """Extract and validate the Bearer token; return persisted user payload or raise 401."""
     if not credentials:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+
     payload = verify_google_token(credentials.credentials)
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+
+    sub: str = payload["sub"]
+    email: str = payload["email"]
+    name: str = payload.get("name", "")
+
+    user = await d1_service.get_or_create_user(sub, email, name)
     return {
-        "sub": payload["sub"],
-        "email": payload["email"],
-        "name": payload.get("name", ""),
+        "sub": user["id"],
+        "email": user["email"],
+        "name": user.get("name", ""),
     }

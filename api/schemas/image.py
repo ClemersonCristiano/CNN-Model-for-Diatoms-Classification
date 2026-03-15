@@ -15,3 +15,9 @@ class ImageOut(BaseModel):
 class TreatResponse(BaseModel):
     image_id: str
     url: str  # presigned URL of the treated image
+
+
+class DeleteImageResponse(BaseModel):
+    success: bool
+    image_id: str
+    message: str

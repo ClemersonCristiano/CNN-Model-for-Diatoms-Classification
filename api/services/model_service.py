@@ -53,7 +53,7 @@ def predict(image_bytes: bytes, model_id: str) -> dict:
     Args:
         image_bytes: PNG bytes of the 400×400 grayscale image produced by
                      image_service.treat_image().
-        model_id: One of "7k", "10k", "22k".
+        model_id: One of "model_7k", "model_10k", "model_22k".
 
     Returns:
         {

@@ -13,6 +13,7 @@ from api.core.exceptions import (
     validation_exception_handler,
 )
 from api.routers import auth, history, images, predict, process
+from api.schemas.common import ApiResponse
 from api.services.model_service import load_models
 
 # ---------------------------------------------------------------------------
@@ -40,7 +41,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
+        "http://localhost:5173", "http://127.0.0.1:5173",
         # Add Cloudflare Pages URL here after Phase 5, e.g.:
         # "https://diatoms.pages.dev",
     ],
@@ -68,4 +69,4 @@ app.include_router(history.router, prefix="/api")
 
 @app.get("/health", tags=["health"])
 async def health():
-    return {"status": "ok"}
+    return ApiResponse(message="API is healthy", data={"status": "ok"})

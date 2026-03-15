@@ -24,9 +24,9 @@ def test_predict_returns_expected_keys():
     # Mock model that returns uniform probabilities across 5 classes
     mock_model = MagicMock()
     mock_model.predict.return_value = np.array([[0.2, 0.2, 0.2, 0.2, 0.2]])
-    model_service.MODELS["22k"] = mock_model
+    model_service.MODELS["model_22k"] = mock_model
 
-    result = model_service.predict(_make_grayscale_400_bytes(), "22k")
+    result = model_service.predict(_make_grayscale_400_bytes(), "model_22k")
 
     assert "predicted_class" in result
     assert "confidence" in result
@@ -39,9 +39,9 @@ def test_predict_probabilities_sum_to_one():
 
     mock_model = MagicMock()
     mock_model.predict.return_value = np.array([[0.6, 0.1, 0.1, 0.1, 0.1]])
-    model_service.MODELS["7k"] = mock_model
+    model_service.MODELS["model_7k"] = mock_model
 
-    result = model_service.predict(_make_grayscale_400_bytes(), "7k")
+    result = model_service.predict(_make_grayscale_400_bytes(), "model_7k")
     total = sum(result["probabilities"].values())
     assert abs(total - 1.0) < 1e-5
 
