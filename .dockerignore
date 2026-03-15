@@ -1,0 +1,25 @@
+# Python / cache
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Environment
+.env
+**/.env
+
+# Data local
+api/dataset/
+
+# Frontend workspace(s) — keep out of API image build context
+front/
+frontend/
+TaxDiatoms-frontend/
+
+# Frontend dependencies / build artifacts (if frontend is inside monorepo)
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
